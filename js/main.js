@@ -121,8 +121,9 @@ function step(){const c=els.find(e=>e.classList.contains('center'));
   if(c&&c.querySelector('img.b')&&!c.classList.contains('flip'))c.classList.add('flip');
   else{els.forEach(e=>e.classList.remove('flip'));go(1);}}
 function restart(){clearInterval(timer);if(!hovering&&!focused&&!spotPaused&&spotVisible&&!document.hidden)timer=setInterval(step,2500);}
-spot.addEventListener('mouseenter',()=>{hovering=true;restart();spot.classList.add('paused');});
-spot.addEventListener('mouseleave',()=>{hovering=false;spot.classList.remove('paused');restart();});
+// pause only while the cursor is on the piece in the centre (not anywhere in the section)
+stage.addEventListener('mouseover',e=>{if(!hovering&&e.target.closest('.slide.center')){hovering=true;spot.classList.add('paused');restart();}});
+stage.addEventListener('mouseout',e=>{const c=e.target.closest('.slide.center');if(hovering&&(!c||!c.contains(e.relatedTarget))){hovering=false;spot.classList.remove('paused');restart();}});
 spot.addEventListener('focusin',()=>{focused=true;restart();});spot.addEventListener('focusout',()=>{focused=false;restart();});
 document.addEventListener('visibilitychange',restart);
 if('IntersectionObserver' in window)new IntersectionObserver(e=>{spotVisible=e[0].isIntersecting;restart();},{threshold:.25}).observe(spot);else spotVisible=true;
